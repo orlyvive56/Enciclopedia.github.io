@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Árboles de Colombia — Enciclopedia Botánica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bark:#5C3D2E;--bark-light:#8B5E3C;--moss:#4A6741;--moss-light:#6B8F5E;
+      --earth:#C9A87C;--earth-light:#E8D5B7;--parchment:#F7F2E8;
+      --parchment-dark:#EDE5D0;--ink:#2C1F14;--ink-soft:#4A3728;--mist:#D6E8CE;
+    }
+    body{font-family:'Lora',Georgia,serif;background:var(--parchment);color:var(--ink);min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 10%,rgba(107,143,94,.08) 0%,transparent 55%),radial-gradient(ellipse at 85% 90%,rgba(92,61,46,.07) 0%,transparent 55%);pointer-events:none;z-index:0;}
+    .wrapper{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem 4rem;position:relative;z-index:1;}
+    .site-header{text-align:center;margin-bottom:3rem;border-bottom:2px solid var(--bark-light);padding-bottom:2rem;}
+    .site-header h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);color:var(--bark);}
+    .site-header p{font-style:italic;color:var(--ink-soft);margin-top:.6rem;font-size:1.05rem;}
+    .badge{display:inline-block;background:var(--mist);color:var(--moss);font-size:.75rem;padding:.25rem .7rem;border-radius:99px;margin-top:.8rem;letter-spacing:.06em;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:1rem;}
+    .tree-card{display:flex;flex-direction:column;background:#FDFAF4;border:1px solid rgba(92,61,46,.18);border-radius:6px;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s;overflow:hidden;}
+    .tree-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(92,61,46,.15);}
+    .card-emoji{background:var(--parchment-dark);font-size:3.5rem;text-align:center;padding:1.5rem 1rem;border-bottom:1px solid rgba(92,61,46,.12);}
+    .card-body{padding:1.2rem 1.2rem 1.4rem;flex:1;display:flex;flex-direction:column;gap:.35rem;}
+    .card-body h2{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--bark);}
+    .card-body .sci{font-style:italic;font-size:.82rem;color:var(--moss);}
+    .card-body .fam{font-size:.75rem;color:var(--bark-light);letter-spacing:.05em;text-transform:uppercase;}
+    .card-body .desc{font-size:.85rem;color:var(--ink-soft);margin-top:.3rem;line-height:1.5;flex:1;}
+    .btn{display:inline-block;margin-top:.8rem;background:var(--moss);color:#fff;font-family:'Lora',serif;font-size:.82rem;padding:.4rem 1rem;border-radius:3px;transition:background .2s;align-self:flex-start;}
+    .tree-card:hover .btn{background:var(--bark);}
+    footer{margin-top:3rem;text-align:center;font-size:.75rem;color:var(--ink-soft);border-top:1px solid rgba(92,61,46,.18);padding-top:1rem;}
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <header class="site-header">
+    <h1>🌿 Árboles de Colombia</h1>
+    <p>Enciclopedia botánica escolar — Fichas de especies tropicales</p>
+    <span class="badge">9 especies documentadas · Mayo 2026</span>
+  </header>
+  <div class="grid">
+
+    <a class="tree-card" href="nim.html">
+      <div class="card-emoji">🌿</div>
+      <div class="card-body">
+        <h2>Nim</h2>
+        <p class="sci">Azadirachta indica</p>
+        <p class="fam">Meliaceae</p>
+        <p class="desc">El árbol milenario de la India, ampliamente adaptado a los climas tropicales y secos de Co…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="caracoli.html">
+      <div class="card-emoji">🌳</div>
+      <div class="card-body">
+        <h2>Caracolí</h2>
+        <p class="sci">Anacardium excelsum</p>
+        <p class="fam">Anacardiaceae</p>
+        <p class="desc">Uno de los árboles más imponentes de los parques y zonas tropicales de Colombia.…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="saman.html">
+      <div class="card-emoji">🌦️</div>
+      <div class="card-body">
+        <h2>Samán (Árbol de lluvia)</h2>
+        <p class="sci">Samanea saman</p>
+        <p class="fam">Fabaceae</p>
+        <p class="desc">El majestuoso árbol de la zona intertropical americano, símbolo de sombra y hospitalidad e…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="ebano.html">
+      <div class="card-emoji">🪵</div>
+      <div class="card-body">
+        <h2>Ébano / Palo de Hierro</h2>
+        <p class="sci">Caesalpinia ebano / Simarouba brasiliensis</p>
+        <p class="fam">Fabaceae / Simaroubaceae</p>
+        <p class="desc">Árbol de madera extraordinariamente dura, símbolo de resistencia en los bosques secos colo…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="palma-bambu.html">
+      <div class="card-emoji">🌴</div>
+      <div class="card-body">
+        <h2>Palma Amarilla / Palmera Bambú</h2>
+        <p class="sci">Dypsis lutescens</p>
+        <p class="fam">Arecaceae</p>
+        <p class="desc">Palmera multicaule de interiores y exteriores, reconocida por su capacidad de purificar el…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="orejero.html">
+      <div class="card-emoji">👂</div>
+      <div class="card-body">
+        <h2>Orejero</h2>
+        <p class="sci">Enterolobium cyclocarpum</p>
+        <p class="fam">Fabaceae</p>
+        <p class="desc">El gigante de los bosques tropicales americanos, reconocible por sus frutos en forma de or…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="totumo.html">
+      <div class="card-emoji">🫙</div>
+      <div class="card-body">
+        <h2>Totumo</h2>
+        <p class="sci">Crescentia cujete</p>
+        <p class="fam">Bignoniaceae</p>
+        <p class="desc">El árbol de los frutos esféricos que han servido como recipientes artesanales a los pueblo…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="almendra.html">
+      <div class="card-emoji">🌰</div>
+      <div class="card-body">
+        <h2>Almendra</h2>
+        <p class="sci">Terminalia catappa</p>
+        <p class="fam">Combretaceae</p>
+        <p class="desc">Árbol de amplia sombra y follaje vistoso, emblema de las costas tropicales de Colombia.…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+    <a class="tree-card" href="corona-espinas.html">
+      <div class="card-emoji">🌸</div>
+      <div class="card-body">
+        <h2>Corona de Espinas</h2>
+        <p class="sci">Euphorbia milii</p>
+        <p class="fam">Euphorbiaceae</p>
+        <p class="desc">Planta suculenta ornamental del sudeste asiático, resistente a la sequía y muy apreciada e…</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+           <a class="tree-card" href="Mango.html">
+      <div class="card-emoji">🥭</div>
+      <div class="card-body">
+        <h2>Mango</h2>
+        <p class="sci">Mangifera</p>
+        <p class="fam">Mangifera indica</p>
+        <p class="desc">El mango (Mangifera indica) es un árbol frutal tropical de copa densa originario del sur de Asia...</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+        <a class="tree-card" href="Campano.html">
+      <div class="card-emoji">🍃</div>
+      <div class="card-body">
+        <h2>Campano</h2>
+        <p class="sci">Melia azedarach</p>
+        <p class="fam">Melia</p>
+        <p class="desc">El Campano o Cinamomo (Melia azedarach) es un árbol caducifolio de rápido crecimiento muy apreciado por su densa sombra y su fragante floración primaveral...</p>
+        <span class="btn">Ver ficha →</span>
+      </div>
+    </a>
+  </div>
+  </div>
+  <footer>Proyecto escolar IE David Sanchez Juliao · Grupo Guardianes Codigo Verde · Proyecto:Smartreecode · Mayo 2026</footer>
+</div>
+</body>
+</html>

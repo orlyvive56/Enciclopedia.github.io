@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campano — Melia azedarach — Enciclopedia Botánica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bark: #5C3D2E;
+      --bark-light: #8B5E3C;
+      --moss: #4A6741;
+      --moss-light: #6B8F5E;
+      --leaf: #7BAE5A;
+      --earth: #C9A87C;
+      --earth-light: #E8D5B7;
+      --parchment: #F7F2E8;
+      --parchment-dark: #EDE5D0;
+      --ink: #2C1F14;
+      --ink-soft: #4A3728;
+      --mist: #D6E8CE;
+      --border-natural: rgba(92, 61, 46, 0.2);
+    }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background-color: var(--parchment);
+      color: var(--ink);
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(ellipse at 10% 20%, rgba(107,143,94,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse at 90% 80%, rgba(92,61,46,0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrapper { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; position: relative; z-index: 1; }
+
+    .page-header { border-bottom: 2px solid var(--bark-light); padding-bottom: 1rem; margin-bottom: 2rem; }
+
+    .breadcrumb { font-family: 'Lora', serif; font-size: 0.78rem; color: var(--bark-light); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .breadcrumb span { color: var(--moss); }
+
+    h1.tree-name { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 600; color: var(--bark); line-height: 1.1; }
+    h1.tree-name em { display: block; font-size: 0.52em; font-weight: 400; font-style: italic; color: var(--moss); margin-top: 0.25rem; }
+
+    .tagline { font-style: italic; color: var(--ink-soft); font-size: 1rem; margin-top: 0.6rem; border-left: 3px solid var(--earth); padding-left: 0.8rem; }
+
+    .main-content { display: block; }
+
+    .hero-image-block { float: right; margin: 0 0 1.5rem 2rem; width: 340px; }
+
+    @media (max-width: 680px) {
+      .hero-image-block { float: none; width: 100%; margin: 0 0 1.5rem 0; }
+      .infobox { float: none; width: 100%; margin: 0 0 1.5rem 0; }
+    }
+
+    .image-container { position: relative; width: 100%; aspect-ratio: 3/4; background: var(--parchment-dark); border: 1px solid var(--border-natural); border-radius: 4px; overflow: hidden; }
+
+    .img-loader { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: var(--parchment-dark); z-index: 2; transition: opacity 0.5s ease; }
+    .img-loader.hidden { opacity: 0; pointer-events: none; }
+
+    .leaf-spinner { width: 48px; height: 48px; animation: spin-leaf 2s ease-in-out infinite; }
+    @keyframes spin-leaf { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.15); } 100% { transform: rotate(360deg) scale(1); } }
+
+    .loader-text { font-size: 0.78rem; color: var(--moss); font-style: italic; letter-spacing: 0.05em; }
+    .loader-bar { width: 120px; height: 3px; background: var(--mist); border-radius: 99px; overflow: hidden; }
+    .loader-bar-fill { height: 100%; width: 30%; background: var(--moss); border-radius: 99px; animation: bar-slide 1.6s ease-in-out infinite; }
+    @keyframes bar-slide { 0% { transform: translateX(-100%); } 50% { transform: translateX(180%); } 100% { transform: translateX(-100%); } }
+
+    .img-error { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; background: var(--parchment-dark); z-index: 2; padding: 1.5rem; text-align: center; }
+    .img-error.visible { display: flex; }
+    .error-icon { font-size: 2.4rem; opacity: 0.4; }
+    .img-error p { font-size: 0.8rem; color: var(--ink-soft); font-style: italic; }
+    .img-error .retry-btn { margin-top: 0.25rem; font-size: 0.75rem; font-family: 'Lora', serif; color: var(--moss); background: none; border: 1px solid var(--moss-light); border-radius: 3px; padding: 0.3rem 0.8rem; cursor: pointer; transition: background 0.2s; }
+    .img-error .retry-btn:hover { background: var(--mist); }
+
+    .tree-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.6s ease; }
+    .tree-img.loaded { opacity: 1; }
+
+    .image-caption { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; text-align: center; margin-top: 0.5rem; padding: 0 0.25rem; line-height: 1.4; }
+    .image-caption strong { font-style: normal; color: var(--bark); display: block; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.2rem; }
+
+    .infobox { float: right; clear: right; width: 340px; margin: 0 0 1.5rem 2rem; border: 1px solid var(--border-natural); border-collapse: collapse; font-size: 0.85rem; background: #FDFAF4; box-shadow: 2px 2px 0 rgba(92,61,46,0.08); }
+    .infobox-title { background: var(--bark); color: var(--earth-light); font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; text-align: center; padding: 0.65rem 1rem; letter-spacing: 0.02em; }
+    .infobox-subtitle { background: var(--bark-light); color: var(--earth-light); font-size: 0.75rem; text-align: center; padding: 0.35rem 1rem; font-style: italic; letter-spacing: 0.03em; }
+    .infobox table { width: 100%; border-collapse: collapse; }
+    .infobox tr { border-top: 1px solid var(--border-natural); }
+    .infobox tr:first-child { border-top: none; }
+    .infobox td { padding: 0.42rem 0.75rem; vertical-align: top; line-height: 1.4; }
+    .infobox td.label { font-weight: 500; color: var(--bark); white-space: nowrap; width: 42%; font-size: 0.8rem; }
+    .infobox td.value { color: var(--ink); font-size: 0.82rem; }
+    .infobox .section-header td { background: var(--mist); color: var(--moss); font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.3rem 0.75rem; }
+
+    .article-body { overflow: hidden; }
+    .article-body p { margin-bottom: 1.1rem; font-size: 0.97rem; text-align: justify; }
+    .article-body p:first-child::first-letter { font-family: 'Playfair Display', serif; font-size: 3.2em; font-weight: 600; float: left; line-height: 0.8; margin: 0.1em 0.1em 0 0; color: var(--bark); }
+
+    .section { margin-top: 2.4rem; clear: both; }
+    .section h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 600; color: var(--bark); border-bottom: 1px solid var(--border-natural); padding-bottom: 0.35rem; margin-bottom: 1rem; }
+    .section h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 400; font-style: italic; color: var(--moss); margin: 1.2rem 0 0.6rem; }
+    .section p { font-size: 0.97rem; margin-bottom: 1rem; text-align: justify; }
+
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .gallery-item { border: 1px solid var(--border-natural); border-radius: 3px; overflow: hidden; }
+    .gallery-item .image-container { aspect-ratio: 4/3; }
+    .gallery-item .image-caption { padding: 0.4rem 0.5rem; }
+
+    .notes-block { background: var(--parchment-dark); border-left: 4px solid var(--earth); border-radius: 0 4px 4px 0; padding: 1rem 1.25rem; margin: 1.5rem 0; font-size: 0.88rem; font-style: italic; color: var(--ink-soft); }
+
+    .uses-list { list-style: none; padding: 0; }
+    .uses-list li { padding: 0.3rem 0 0.3rem 1.4rem; position: relative; font-size: 0.95rem; border-bottom: 1px dotted rgba(92,61,46,0.15); }
+    .uses-list li::before { content: '⊛'; position: absolute; left: 0; color: var(--moss); font-size: 0.8em; top: 0.45rem; }
+
+    .page-footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border-natural); font-size: 0.75rem; color: var(--ink-soft); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+    .ornament { text-align: center; color: var(--earth); font-size: 1.4rem; margin: 2rem 0; opacity: 0.6; letter-spacing: 0.5rem; }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <div class="breadcrumb">Enciclopedia Botánica › Árboles › <span>Meliaceae</span></div>
+    <h1 class="tree-name">
+      Campano
+      <em>Melia azedarach L. — Linnaeus, 1753</em>
+    </h1>
+    <p class="tagline">El árbol del paraíso: una especie de rápido crecimiento, flores perfumadas y amplia presencia en paisajes tropicales y subtropicales de todo el mundo.</p>
+  </header>
+
+  <div class="main-content">
+
+    <div class="hero-image-block">
+      <div class="image-container" id="heroContainer">
+        <div class="img-loader" id="heroLoader">
+          <svg class="leaf-spinner" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 4C24 4 8 14 8 28C8 36.837 15.163 44 24 44C32.837 44 40 36.837 40 28C40 14 24 4 24 4Z" fill="#4A6741" opacity="0.85"/>
+            <path d="M24 10C24 10 24 44 24 44" stroke="#7BAE5A" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M24 20C24 20 16 24 12 32" stroke="#6B8F5E" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+            <path d="M24 26C24 26 32 28 36 34" stroke="#6B8F5E" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+          </svg>
+          <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+          <span class="loader-text">Cargando imagen…</span>
+        </div>
+        <div class="img-error" id="heroError">
+          <div class="error-icon">🌿</div>
+          <p>No se pudo cargar la imagen.<br>Verifica la ruta o la URL.</p>
+          <button class="retry-btn" onclick="retryImage()">↺ Reintentar</button>
+        </div>
+        <img
+          id="heroImg"
+          class="tree-img"
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTspH-ZcbXcIoubl2Tl88LyB4Lq1c0jccQ3fQ&s"
+          alt="Melia azedarach — Campano en floración"
+          onload="imageLoaded()"
+          onerror="imageError()"
+        />
+      </div>
+      <div class="image-caption">
+        <strong>Fotografía principal</strong>
+        Ejemplar adulto de <em>Melia azedarach</em> con su característica copa amplia y extendida. Wikimedia Commons / CC BY-SA.
+      </div>
+    </div>
+
+    <aside class="infobox">
+      <div class="infobox-title">Campano</div>
+      <div class="infobox-subtitle">Melia azedarach L.</div>
+      <table>
+        <tr class="section-header"><td colspan="2">Clasificación científica</td></tr>
+        <tr><td class="label">Reino</td><td class="value">Plantae</td></tr>
+        <tr><td class="label">División</td><td class="value">Magnoliophyta</td></tr>
+        <tr><td class="label">Clase</td><td class="value">Magnoliopsida</td></tr>
+        <tr><td class="label">Orden</td><td class="value">Sapindales</td></tr>
+        <tr><td class="label">Familia</td><td class="value">Meliaceae</td></tr>
+        <tr><td class="label">Género</td><td class="value"><em>Melia</em></td></tr>
+        <tr><td class="label">Especie</td><td class="value"><em>M. azedarach</em></td></tr>
+
+        <tr class="section-header"><td colspan="2">Características</td></tr>
+        <tr><td class="label">Altura</td><td class="value">7 – 15 m (hasta 20 m)</td></tr>
+        <tr><td class="label">Diámetro</td><td class="value">30 – 60 cm (DAP)</td></tr>
+        <tr><td class="label">Hoja</td><td class="value">Bipinnada compuesta, caducifolia</td></tr>
+        <tr><td class="label">Flor</td><td class="value">Lila a violeta, aromática, en panículas</td></tr>
+        <tr><td class="label">Fruto</td><td class="value">Drupa globosa, amarilla al madurar</td></tr>
+        <tr><td class="label">Corteza</td><td class="value">Gris-pardusca, fisurada longitudinalmente</td></tr>
+
+        <tr class="section-header"><td colspan="2">Distribución</td></tr>
+        <tr><td class="label">Origen</td><td class="value">Sur y sureste de Asia (India, China, Himalaya)</td></tr>
+        <tr><td class="label">Hábitat</td><td class="value">Bosques secos, riberas, áreas perturbadas</td></tr>
+        <tr><td class="label">Altitud</td><td class="value">0 – 1.800 m.s.n.m.</td></tr>
+        <tr><td class="label">Clima</td><td class="value">Tropical, subtropical y templado cálido</td></tr>
+
+        <tr class="section-header"><td colspan="2">Estado de conservación</td></tr>
+        <tr><td class="label">Estado</td><td class="value">UICN: No evaluada (especie ampliamente naturalizada)</td></tr>
+        <tr><td class="label">Amenazas</td><td class="value">Considerada invasora en algunos países y ecosistemas</td></tr>
+
+        <tr class="section-header"><td colspan="2">Nombres comunes</td></tr>
+        <tr><td colspan="2" class="value" style="padding: 0.4rem 0.75rem;">
+          Campano, paraíso, cinamomo, flor de paraíso (Colombia), canelo (Venezuela), árbol de las cuentas, lila de India, <em>chinaberry</em> (inglés), <em>margousier</em> (francés)
+        </td></tr>
+      </table>
+    </aside>
+
+    <div class="article-body">
+      <p>
+        El campano (<em>Melia azedarach</em> L.) es un árbol de porte mediano a grande perteneciente a la familia Meliaceae, originario de las estribaciones del Himalaya, el norte y centro de India, China meridional y el sureste asiático. Gracias a su extraordinaria adaptabilidad, su rápido crecimiento y la belleza ornamental de sus flores lila, fue introducido y naturalizado desde los siglos XVII y XVIII en prácticamente todas las regiones tropicales y subtropicales del mundo, convirtiéndose hoy en uno de los árboles más reconocibles del paisaje rural y urbano de América Latina.
+      </p>
+      <p>
+        En Colombia se le conoce principalmente como <em>campano</em> o <em>flor de paraíso</em>, y es una presencia característica en potreros, bordes de caminos, plazas y patios de las regiones Caribe, Andina y de los valles interandinos del Magdalena y el Cauca. Su madera, sus frutos y su corteza han sido aprovechados durante siglos en la medicina tradicional, la agroforestería y la carpintería liviana. Cabe advertir que los frutos y la corteza son tóxicos si se ingieren en cantidad, especialmente para cerdos y bovinos.
+      </p>
+      <p>
+        Aunque es una especie exótica en la mayor parte de su rango actual, el campano ha desarrollado relaciones ecológicas relevantes con la fauna local: sus frutos son consumidos por diversas aves frugívoras que actúan como dispersores, y sus flores atraen a abejas y mariposas durante la floración. Esto lo convierte en un componente funcional de los ecosistemas donde se ha establecido, aunque también genera debate en torno a su potencial invasor en ecosistemas nativos frágiles.
+      </p>
+    </div>
+
+    <section class="section">
+      <h2>Descripción botánica</h2>
+      <p>El campano es un árbol caducifolio de porte recto, con fuste cilíndrico que alcanza entre 7 y 15 metros de altura, ocasionalmente hasta 20 metros en condiciones óptimas de suelo y clima. Su copa es amplia, extendida y de forma umbelada o irregular, lo que le confiere un aspecto frondoso muy apreciado como árbol de sombra. El crecimiento es rápido: puede superar el metro de altura por año durante sus primeros años de vida, lo que lo hace especialmente valioso en programas de reforestación y agroforestería.</p>
+
+      <h3>Hojas</h3>
+      <p>Las hojas son bipinnadas compuestas, alternas, con una longitud total de 30 a 80 cm. Cada hoja porta de 7 a 15 pares de pinnas, y cada pinna lleva de 5 a 11 folíolos lanceolados u ovados con margen serrado o dentado, de 2 a 5 cm de largo. La lámina es de color verde intenso en el haz y más pálida en el envés, con textura membranácea. Son hojas caducas: el árbol las pierde en la estación seca, revelando durante semanas los racimos de frutos amarillentos colgantes, característica muy distintiva del campano.</p>
+
+      <h3>Flores</h3>
+      <p>Las flores son pequeñas (cerca de 1 cm de diámetro), con cinco pétalos de color lila a violeta claro y un tubo estaminal morado oscuro muy característico en el centro. Se agrupan en panículas axilares laxas de 10 a 20 cm de longitud, con centenares de flores que cubren el árbol de color generalmente entre los meses de marzo y mayo en el hemisferio norte (octubre–diciembre en el sur). Desprenden un aroma suave y agradable que atrae a abejas, mariposas y otros insectos polinizadores.</p>
+
+      <h3>Frutos y semillas</h3>
+      <p>El fruto es una drupa globosa u ovoide de 1 a 2 cm de diámetro. El exocarpo es carnoso, de color verde que vira a amarillo dorado o crema al madurar. Persiste en el árbol durante varios meses tras la caída de las hojas, lo que facilita su identificación en la estación seca. El endocarpo es leñoso y duro, con 4 a 5 semillas en su interior. Los frutos contienen meliatoxinas (tetranortriterpenos) que resultan tóxicos para cerdos, bovinos, ovinos y humanos en caso de ingestión; sin embargo, las aves los consumen sin aparente daño y son los principales dispersores de la especie.</p>
+
+      <h3>Raíz y corteza</h3>
+      <p>El sistema radicular es profundo y bien desarrollado, lo que confiere al árbol una buena resistencia a la sequía una vez establecido. La corteza externa (ritidoma) es gris-pardusca con fisuras longitudinales profundas que se acentúan con la edad. La corteza interna es amarga y aromática, rica en limonoides, triterpenos y alcaloides con propiedades bioactivas. La madera es de color castaño rojizo, grano recto a entrecruzado, moderadamente dura y relativamente liviana (densidad aproximada 0,50–0,65 g/cm³), comparable en apariencia a la caoba (<em>Swietenia</em> spp.), con quien comparte familia botánica.</p>
+    </section>
+
+    <section class="section">
+      <h2>Distribución y hábitat</h2>
+      <p>La especie es originaria de las laderas del Himalaya, el norte y centro de India, Myanmar, China meridional y el sureste asiático continental e insular. Desde esas regiones fue introducida durante los siglos XVII y XVIII al Mediterráneo, África subsahariana, Australia, las islas del Pacífico y las Américas. Actualmente se encuentra naturalizada en más de 80 países. En Colombia tiene amplia presencia desde el nivel del mar hasta aproximadamente 1.800 m de altitud, con mayor densidad en la región Caribe, los valles del Magdalena y el Cauca, y los piedemontes andinos.</p>
+      <p>Prefiere suelos profundos, bien drenados y de textura franca a arcillo-arenosa, aunque muestra notable tolerancia a suelos pobres, degradados y compactados. Requiere plena exposición solar para su óptimo desarrollo y soporta períodos prolongados de sequía una vez establecido. Se adapta a climas con precipitaciones de 400 a 2.500 mm anuales y temperaturas medias entre 12 y 36 °C. Es una especie pionera o secundaria temprana que coloniza áreas abiertas, bordes de bosque, riberas de ríos y terrenos alterados; raramente ingresa a bosques maduros cerrados.</p>
+
+      <div class="notes-block">
+        💡 <strong>Nota ecológica:</strong> El campano cumple un papel relevante como árbol de sombra y refugio en sistemas silvopastoriles del trópico americano. Sus frutos constituyen una fuente de alimento para aves frugívoras como el toché (<em>Icterus chrysater</em>), el turpial (<em>Icterus icterus</em>) y diversas palomas, que actúan como dispersores naturales y contribuyen a la expansión territorial de la especie. La floración también es visitada con frecuencia por abejas melíferas, lo que le confiere valor apícola adicional.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usos e importancia</h2>
+      <p>El campano es una de las especies multipropósito más empleadas en las regiones tropicales del mundo. Desde la antigüedad, culturas en Asia, África y América han aprovechado su madera, corteza, hojas y frutos para fines maderables, medicinales, bioplaguicidas y ornamentales. Su rápido crecimiento y facilidad de propagación lo convierten en un recurso de gran valor para la reforestación, la agroforestería y la restauración ecológica de tierras degradadas.</p>
+
+      <h3>Usos principales</h3>
+      <ul class="uses-list">
+        <li><strong>Madera:</strong> utilizada en carpintería general, fabricación de muebles rústicos, mangos de herramientas, cajas y embalajes. Su madera es trabajable con buenas propiedades de acabado, aunque de durabilidad moderada sin tratamiento.</li>
+        <li><strong>Medicina tradicional:</strong> la corteza, las hojas y las semillas se emplean en medicina popular como antihelmíntico (vermífugo), antifúngico, antiinflamatorio y antipirético. La decocción de corteza se usa para combatir parásitos intestinales en la medicina campesina colombiana.</li>
+        <li><strong>Bioplaguicida:</strong> los extractos del fruto y las hojas contienen limonoides con actividad insecticida, repelente y antialimentaria frente a plagas como <em>Spodoptera</em> spp. Se investiga activamente como alternativa natural a pesticidas sintéticos.</li>
+        <li><strong>Ornamental y sombrío:</strong> ampliamente plantado en parques, plazas, avenidas, fincas ganaderas y sistemas silvopastoriles por su copa frondosa, su llamativa floración lila y su eficacia como árbol de sombra para el ganado y los trabajadores del campo.</li>
+        <li><strong>Agroforestería y restauración:</strong> empleado en cercas vivas, cortinas rompevientos y programas de restauración de tierras degradadas por su rápido crecimiento, fácil establecimiento y capacidad de mejorar la estructura y fertilidad del suelo.</li>
+        <li><strong>Leña y carbón:</strong> la madera procedente de podas y raleos es aprovechada como combustible en zonas rurales de Colombia, Venezuela y otros países tropicales, donde su rápido rebrote garantiza un suministro sostenido.</li>
+      </ul>
+
+      <h3>Importancia cultural</h3>
+      <p>En varias regiones de Colombia, especialmente en la Costa Caribe y los Santanderes, el campano está profundamente arraigado en la memoria paisajística y cotidiana de las comunidades rurales. Su floración lila y su sombra generosa lo hacen protagonista de plazas de pueblo y patios familiares. En la tradición campesina de la región Caribe, la floración del campano suele asociarse con el inicio de las lluvias y presagios de buena cosecha. En municipios como Montería, Sincelejo y Valledupar, sus ejemplares centenarios son referentes del patrimonio arbóreo urbano. En la India y el Mediterráneo, el árbol tiene larga presencia en la poesía y la tradición religiosa, y sus duros endocarpos (frutos) eran usados como cuentas de rosarios y amuletos en distintas culturas del mundo islámico y cristiano.</p>
+    </section>
+
+    <section class="section">
+      <h2>Galería</h2>
+      <div class="gallery" id="gallery">
+
+        <div class="gallery-item">
+          <div class="image-container" id="g1Container">
+            <div class="img-loader" id="g1Loader">
+              <svg class="leaf-spinner" style="width:32px;height:32px" viewBox="0 0 48 48" fill="none">
+                <path d="M24 4C24 4 8 14 8 28C8 36.837 15.163 44 24 44C32.837 44 40 36.837 40 28C40 14 24 4 24 4Z" fill="#4A6741" opacity="0.8"/>
+                <path d="M24 10C24 10 24 44 24 44" stroke="#7BAE5A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+            </div>
+            <div class="img-error" id="g1Error">
+              <div class="error-icon" style="font-size:1.5rem">🌿</div>
+              <p style="font-size:0.72rem">Imagen no disponible</p>
+            </div>
+            <img id="g1Img" class="tree-img"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Melia_azedarach_flowers_and_leaves.jpg/640px-Melia_azedarach_flowers_and_leaves.jpg"
+              alt="Flores de Melia azedarach"
+              onload="galleryLoaded('g1')" onerror="galleryError('g1')" />
+          </div>
+          <div class="image-caption">Detalle de la inflorescencia en panícula con flores lila y tubo estaminal morado, muy característico de la especie.</div>
+        </div>
+
+        <div class="gallery-item">
+          <div class="image-container" id="g2Container">
+            <div class="img-loader" id="g2Loader">
+              <svg class="leaf-spinner" style="width:32px;height:32px" viewBox="0 0 48 48" fill="none">
+                <path d="M24 4C24 4 8 14 8 28C8 36.837 15.163 44 24 44C32.837 44 40 36.837 40 28C40 14 24 4 24 4Z" fill="#4A6741" opacity="0.8"/>
+                <path d="M24 10C24 10 24 44 24 44" stroke="#7BAE5A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+            </div>
+            <div class="img-error" id="g2Error">
+              <div class="error-icon" style="font-size:1.5rem">🌿</div>
+              <p style="font-size:0.72rem">Imagen no disponible</p>
+            </div>
+            <img id="g2Img" class="tree-img"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Melia_azedarach_-_fruits.jpg/640px-Melia_azedarach_-_fruits.jpg"
+              alt="Frutos de Melia azedarach"
+              onload="galleryLoaded('g2')" onerror="galleryError('g2')" />
+          </div>
+          <div class="image-caption">Racimos de drupas maduras de color amarillo dorado. Persisten tras la caída de las hojas y son tóxicos para mamíferos.</div>
+        </div>
+
+        <div class="gallery-item">
+          <div class="image-container" id="g3Container">
+            <div class="img-loader" id="g3Loader">
+              <svg class="leaf-spinner" style="width:32px;height:32px" viewBox="0 0 48 48" fill="none">
+                <path d="M24 4C24 4 8 14 8 28C8 36.837 15.163 44 24 44C32.837 44 40 36.837 40 28C40 14 24 4 24 4Z" fill="#4A6741" opacity="0.8"/>
+                <path d="M24 10C24 10 24 44 24 44" stroke="#7BAE5A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+            </div>
+            <div class="img-error" id="g3Error">
+              <div class="error-icon" style="font-size:1.5rem">🌿</div>
+              <p style="font-size:0.72rem">Imagen no disponible</p>
+            </div>
+            <img id="g3Img" class="tree-img"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Starr_031108-0056_Melia_azedarach.jpg/640px-Starr_031108-0056_Melia_azedarach.jpg"
+              alt="Árbol completo de Melia azedarach"
+              onload="galleryLoaded('g3')" onerror="galleryError('g3')" />
+          </div>
+          <div class="image-caption">Vista general del árbol en la estación seca, mostrando los frutos amarillos colgantes tras la pérdida de las hojas.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Cultivo y conservación</h2>
+      <p>El campano es una de las especies arbóreas más fáciles de propagar y establecer en el trópico. La propagación se realiza principalmente por semillas, las cuales pueden escarificarse mecánicamente o remojarse en agua durante 24 horas para mejorar la tasa de germinación (60–80 % en condiciones óptimas). La propagación vegetativa por estacas de madera semidura es posible pero menos frecuente. El trasplante a sitio definitivo se realiza cuando las plántulas alcanzan 20–30 cm de altura. Una vez establecido, el árbol es de bajo mantenimiento: requiere plena luz solar, tolera la sequía, no es exigente en cuanto al tipo de suelo y se adapta bien a condiciones tanto ácidas como alcalinas. La poda de formación en los primeros dos años es recomendable para obtener un fuste recto y una copa equilibrada.</p>
+      <p>Desde el punto de vista de la conservación, el campano no está amenazado como especie: su amplísima distribución naturalizada y su facilidad de reproducción lo alejan de cualquier categoría de riesgo global. Sin embargo, en países como Australia, Sudáfrica, Bermuda y partes de los Estados Unidos, ha sido catalogado como especie invasora, capaz de desplazar a la vegetación nativa en áreas ribereñas y bosques secundarios. En Colombia no está listado oficialmente como invasor a escala nacional, aunque se recomienda cautela en plantaciones masivas cercanas a bosques secos tropicales y otros ecosistemas sensibles. Las instituciones como el CIAT, Corantioquia y la Universidad Nacional de Colombia continúan investigando su potencial bioplaguicida, su uso en restauración ecológica y su comportamiento en sistemas agroforestales de la región Caribe y Andina.</p>
+    </section>
+
+    <section class="section">
+      <h2>Referencias</h2>
+      <ol style="padding-left: 1.5rem; font-size: 0.88rem; color: var(--ink-soft); line-height: 2;">
+        <li>Linnaeus, C. (1753). <em>Species Plantarum</em>, vol. 1. Holmiae: Impensis Laurentii Salvii.</li>
+        <li>Pennington, T. D. &amp; Styles, B. T. (1975). A generic monograph of the Meliaceae. <em>Blumea</em>, 22(3): 419–540.</li>
+        <li>Mabberley, D. J., Pannell, C. M. &amp; Sing, A. M. (1995). <em>Meliaceae. Flora Malesiana</em>, Series I, vol. 12. Leiden: Rijksherbarium / Hortus Botanicus.</li>
+        <li>Forero, E. &amp; Gentry, A. H. (1989). <em>Lista anotada de las plantas del departamento del Chocó, Colombia</em>. Bogotá: Biblioteca José Jerónimo Triana.</li>
+        <li>Orwa, C., Mutua, A., Kindt, R., Jamnadass, R. &amp; Anthony, S. (2009). <em>Agroforestree Database: a tree reference and selection guide, version 4.0</em>. Nairobi: World Agroforestry Centre. Disponible en: https://www.worldagroforestry.org/treedb [Consultado mayo de 2026].</li>
+        <li>Martínez-Bernal, A. &amp; Sousa-Sánchez, M. (2008). Flora de Veracruz: <em>Melia azedarach</em>. Instituto de Ecología A.C., Xalapa, México.</li>
+      </ol>
+    </section>
+
+    <div class="ornament">✦ ✦ ✦</div>
+
+  </div>
+
+  <footer class="page-footer">
+  <span>Actualización: Mayo 2026</span>
+  <span>Proyecto escolar IE David Sanchez Juliao · Grupo Guardianes Codigo Verde · Proyecto:Smartreecode · Mayo 2026</span>
+  <span>Uso educativo</span>
+  <span>Grupo Guardianes Codigo Verde ·Mayo 2026</span>
+  <span>Proyecto:Smartreecode</span>
+  </footer>
+
+</div>
+
+<script>
+  function imageLoaded() {
+    document.getElementById('heroImg').classList.add('loaded');
+    document.getElementById('heroLoader').classList.add('hidden');
+  }
+  function imageError() {
+    document.getElementById('heroLoader').classList.add('hidden');
+    document.getElementById('heroError').classList.add('visible');
+  }
+  var _heroSrc = document.getElementById('heroImg').src;
+  function retryImage() {
+    var img = document.getElementById('heroImg');
+    var loader = document.getElementById('heroLoader');
+    var error = document.getElementById('heroError');
+    error.classList.remove('visible');
+    loader.classList.remove('hidden');
+    img.src = '';
+    setTimeout(function() { img.src = _heroSrc + '?t=' + Date.now(); }, 300);
+  }
+  function galleryLoaded(id) {
+    document.getElementById(id + 'Img').classList.add('loaded');
+    document.getElementById(id + 'Loader').classList.add('hidden');
+  }
+  function galleryError(id) {
+    document.getElementById(id + 'Loader').classList.add('hidden');
+    document.getElementById(id + 'Error').classList.add('visible');
+  }
+  window.addEventListener('load', function() {
+    ['heroImg','g1Img','g2Img','g3Img'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.complete && el.naturalWidth > 0) {
+        if (id === 'heroImg') imageLoaded();
+        else galleryLoaded(id.replace('Img',''));
+      }
+    });
+  });
+</script>
+</body>
+</html>
