@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ébano / Palo de Hierro — Enciclopedia Botánica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bark:#5C3D2E;--bark-light:#8B5E3C;--moss:#4A6741;--moss-light:#6B8F5E;
+      --leaf:#7BAE5A;--earth:#C9A87C;--earth-light:#E8D5B7;--parchment:#F7F2E8;
+      --parchment-dark:#EDE5D0;--ink:#2C1F14;--ink-soft:#4A3728;--mist:#D6E8CE;
+      --border-natural:rgba(92,61,46,0.2);
+    }
+    body{font-family:'Lora',Georgia,serif;background:var(--parchment);color:var(--ink);line-height:1.8;min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(ellipse at 10% 20%,rgba(107,143,94,.07) 0%,transparent 60%),radial-gradient(ellipse at 90% 80%,rgba(92,61,46,.06) 0%,transparent 60%);pointer-events:none;z-index:0;}
+    .page-wrapper{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem;position:relative;z-index:1;}
+    .back-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--moss);text-decoration:none;border:1px solid var(--moss-light);border-radius:3px;padding:.3rem .8rem;margin-bottom:1.2rem;transition:background .2s;}
+    .back-link:hover{background:var(--mist);}
+    .page-header{border-bottom:2px solid var(--bark-light);padding-bottom:1rem;margin-bottom:2rem;}
+    .breadcrumb{font-size:.78rem;color:var(--bark-light);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;}
+    .breadcrumb span{color:var(--moss);}
+    h1.tree-name{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:600;color:var(--bark);line-height:1.1;}
+    h1.tree-name em{display:block;font-size:.52em;font-weight:400;font-style:italic;color:var(--moss);margin-top:.25rem;}
+    .tagline{font-style:italic;color:var(--ink-soft);font-size:1rem;margin-top:.6rem;border-left:3px solid var(--earth);padding-left:.8rem;}
+    .main-content{display:block;}
+    .hero-image-block{float:right;margin:0 0 1.5rem 2rem;width:340px;}
+    @media(max-width:680px){.hero-image-block,.infobox{float:none;width:100%;margin:0 0 1.5rem 0;}}
+    .image-container{position:relative;width:100%;aspect-ratio:3/4;background:var(--parchment-dark);border:1px solid var(--border-natural);border-radius:4px;overflow:hidden;}
+    .img-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;background:var(--parchment-dark);z-index:2;transition:opacity .5s ease;}
+    .img-loader.hidden{opacity:0;pointer-events:none;}
+    .leaf-spinner{width:48px;height:48px;animation:spin-leaf 2s ease-in-out infinite;}
+    @keyframes spin-leaf{0%{transform:rotate(0deg) scale(1);}50%{transform:rotate(180deg) scale(1.15);}100%{transform:rotate(360deg) scale(1);}}
+    .loader-text{font-size:.78rem;color:var(--moss);font-style:italic;letter-spacing:.05em;}
+    .loader-bar{width:120px;height:3px;background:var(--mist);border-radius:99px;overflow:hidden;}
+    .loader-bar-fill{height:100%;width:30%;background:var(--moss);border-radius:99px;animation:bar-slide 1.6s ease-in-out infinite;}
+    @keyframes bar-slide{0%{transform:translateX(-100%);}50%{transform:translateX(180%);}100%{transform:translateX(-100%);}}
+    .img-error{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;background:var(--parchment-dark);z-index:2;padding:1.5rem;text-align:center;}
+    .img-error.visible{display:flex;}
+    .error-icon{font-size:2.4rem;opacity:.4;}
+    .img-error p{font-size:.8rem;color:var(--ink-soft);font-style:italic;}
+    .img-error .retry-btn{margin-top:.25rem;font-size:.75rem;font-family:'Lora',serif;color:var(--moss);background:none;border:1px solid var(--moss-light);border-radius:3px;padding:.3rem .8rem;cursor:pointer;}
+    .img-error .retry-btn:hover{background:var(--mist);}
+    .tree-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s ease;}
+    .tree-img.loaded{opacity:1;}
+    .image-caption{font-size:.78rem;color:var(--ink-soft);font-style:italic;text-align:center;margin-top:.5rem;padding:0 .25rem;line-height:1.4;}
+    .image-caption strong{font-style:normal;color:var(--bark);display:block;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.2rem;}
+    .infobox{float:right;clear:right;width:340px;margin:0 0 1.5rem 2rem;border:1px solid var(--border-natural);border-collapse:collapse;font-size:.85rem;background:#FDFAF4;box-shadow:2px 2px 0 rgba(92,61,46,.08);}
+    .infobox-title{background:var(--bark);color:var(--earth-light);font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;text-align:center;padding:.65rem 1rem;letter-spacing:.02em;}
+    .infobox-subtitle{background:var(--bark-light);color:var(--earth-light);font-size:.75rem;text-align:center;padding:.35rem 1rem;font-style:italic;letter-spacing:.03em;}
+    .infobox table{width:100%;border-collapse:collapse;}
+    .infobox tr{border-top:1px solid var(--border-natural);}
+    .infobox tr:first-child{border-top:none;}
+    .infobox td{padding:.42rem .75rem;vertical-align:top;line-height:1.4;}
+    .infobox td.label{font-weight:500;color:var(--bark);white-space:nowrap;width:42%;font-size:.8rem;}
+    .infobox td.value{color:var(--ink);font-size:.82rem;}
+    .infobox .section-header td{background:var(--mist);color:var(--moss);font-size:.72rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;padding:.3rem .75rem;}
+    .article-body{overflow:hidden;}
+    .article-body p{margin-bottom:1.1rem;font-size:.97rem;text-align:justify;}
+    .article-body p:first-child::first-letter{font-family:'Playfair Display',serif;font-size:3.2em;font-weight:600;float:left;line-height:.8;margin:.1em .1em 0 0;color:var(--bark);}
+    .section{margin-top:2.4rem;clear:both;}
+    .section h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:600;color:var(--bark);border-bottom:1px solid var(--border-natural);padding-bottom:.35rem;margin-bottom:1rem;}
+    .section h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;font-style:italic;color:var(--moss);margin:1.2rem 0 .6rem;}
+    .section p{font-size:.97rem;margin-bottom:1rem;text-align:justify;}
+    .notes-block{background:var(--parchment-dark);border-left:4px solid var(--earth);border-radius:0 4px 4px 0;padding:1rem 1.25rem;margin:1.5rem 0;font-size:.88rem;font-style:italic;color:var(--ink-soft);}
+    .uses-list{list-style:none;padding:0;}
+    .uses-list li{padding:.3rem 0 .3rem 1.4rem;position:relative;font-size:.95rem;border-bottom:1px dotted rgba(92,61,46,.15);}
+    .uses-list li::before{content:'⊛';position:absolute;left:0;color:var(--moss);font-size:.8em;top:.45rem;}
+    .page-footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border-natural);font-size:.75rem;color:var(--ink-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+    .ornament{text-align:center;color:var(--earth);font-size:1.4rem;margin:2rem 0;opacity:.6;letter-spacing:.5rem;}
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  <a class="back-link" href="index.html">&#8592; Volver al catálogo</a>
+
+  <!-- ── Cabecera ── -->
+  <header class="page-header">
+    <div class="breadcrumb">Enciclopedia Botánica › Árboles de Colombia › <span>Fabaceae</span></div>
+    <h1 class="tree-name">
+      Ébano / Palo de Hierro
+      <em>Caesalpinia ebano / Simarouba brasiliensis</em>
+    </h1>
+    <p class="tagline">Árbol de madera extraordinariamente dura, símbolo de resistencia en los bosques secos colombianos.</p>
+  </header>
+
+  <!-- ── Contenido principal ── -->
+  <div class="main-content">
+
+    <!-- IMAGEN PRINCIPAL -->
+    <div class="hero-image-block">
+      <div class="image-container" id="heroContainer">
+        <div class="img-loader" id="heroLoader">
+          <svg class="leaf-spinner" viewBox="0 0 48 48" fill="none">
+            <path d="M24 4C24 4 8 14 8 28C8 36.837 15.163 44 24 44C32.837 44 40 36.837 40 28C40 14 24 4 24 4Z" fill="#4A6741" opacity="0.85"/>
+            <path d="M24 10C24 10 24 44 24 44" stroke="#7BAE5A" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+          <span class="loader-text">Cargando imagen…</span>
+        </div>
+        <div class="img-error" id="heroError">
+          <div class="error-icon">🌿</div>
+          <p>Imagen no disponible.<br>Agrega una foto del árbol aquí.</p>
+          <button class="retry-btn" onclick="retryImage()">↺ Reintentar</button>
+        </div>
+        <img id="heroImg" class="tree-img"
+          src="img/ebano.jpg"
+          alt="Fotografía de Ébano / Palo de Hierro"
+          onload="imageLoaded()" onerror="imageError()" />
+      </div>
+      <div class="image-caption">
+        <strong>Fotografía</strong>
+        Ébano / Palo de Hierro — <em>Caesalpinia ebano / Simarouba brasiliensis</em>
+      </div>
+    </div>
+
+    <!-- ── INFOBOX ── -->
+    <aside class="infobox">
+      <div class="infobox-title">Ébano / Palo de Hierro</div>
+      <div class="infobox-subtitle">Caesalpinia ebano H.Karst. / Simarouba brasiliensis</div>
+      <table>
+        <tr class="section-header"><td colspan="2">Clasificación científica</td></tr>
+        <tr><td class="label">Reino</td><td class="value">Plantae</td></tr>
+        <tr><td class="label">División</td><td class="value">Magnoliophyta</td></tr>
+        <tr><td class="label">Clase</td><td class="value">Magnoliopsida</td></tr>
+        <tr><td class="label">Orden</td><td class="value">Fabales / Sapindales</td></tr>
+        <tr><td class="label">Familia</td><td class="value">Fabaceae / Simaroubaceae</td></tr>
+        <tr><td class="label">Género</td><td class="value"><em>Caesalpinia / Simarouba</em></td></tr>
+        <tr><td class="label">Especie</td><td class="value"><em>C. ebano / S. brasiliensis</em></td></tr>
+
+        <tr class="section-header"><td colspan="2">Características</td></tr>
+        <tr><td class="label">Altura</td><td class="value">10 – 25 m</td></tr>
+        <tr><td class="label">Diámetro</td><td class="value">30 – 80 cm</td></tr>
+        <tr><td class="label">Hoja</td><td class="value">Compuesta pinnada</td></tr>
+        <tr><td class="label">Flor</td><td class="value">Amarilla (Caesalpinia); blanca pequeña (Simarouba)</td></tr>
+        <tr><td class="label">Fruto</td><td class="value">Legumbre / Drupa</td></tr>
+        <tr><td class="label">Corteza</td><td class="value">Gris clara, fisurada</td></tr>
+
+        <tr class="section-header"><td colspan="2">Distribución</td></tr>
+        <tr><td class="label">Origen</td><td class="value">Colombia, Venezuela, Brasil</td></tr>
+        <tr><td class="label">Hábitat</td><td class="value">Bosques secos tropicales, zonas urbanas</td></tr>
+        <tr><td class="label">Altitud</td><td class="value">0 – 1 000 m.s.n.m.</td></tr>
+        <tr><td class="label">Clima</td><td class="value">Tropical seco</td></tr>
+
+        <tr class="section-header"><td colspan="2">Estado de conservación</td></tr>
+        <tr><td class="label">Estado</td><td class="value">Vulnerable / En evaluación</td></tr>
+        <tr><td class="label">Amenazas</td><td class="value">Tala por calidad de madera, deforestación</td></tr>
+
+        <tr class="section-header"><td colspan="2">Nombres comunes</td></tr>
+        <tr><td colspan="2" class="value" style="padding:.4rem .75rem">Ébano, Palo de Hierro, Indio Desnudo, Nazareno, Bischofia</td></tr>
+      </table>
+    </aside>
+
+    <!-- ── Texto introductorio ── -->
+    <div class="article-body">
+      <p>Bajo el nombre popular de 'Ébano' o 'Palo de Hierro' se agrupan en Colombia varias especies de madera excepcionalmente dura. Entre ellas destacan la Caesalpinia ebano —endémica de Colombia— y la Simarouba brasiliensis, ambas apreciadas en zonas urbanas y rurales del país.</p>
+      <p>Estos árboles son muy comunes como especie de arborización urbana en ciudades del Caribe colombiano, donde su resistencia a suelos compactados y su calidad de madera los hacen especialmente valorados.</p>
+    </div>
+
+    <!-- ── SECCIONES ── -->
+    <section class="section">
+      <h2>Descripción botánica</h2>
+      <p>Árbol de porte mediano a alto con tronco recto y copa amplia. Su característica más destacada es la extraordinaria dureza y densidad de su madera, que le da el nombre de 'Palo de Hierro'.</p>
+      <h3>Hojas</h3>
+      <p>Hojas compuestas pinnadas, de folíolos obovados o elípticos, verde oscuro brillante. La Simarouba brasiliensis tiene hojas más grandes y simples.</p>
+      <h3>Flores</h3>
+      <p>Las flores de la Caesalpinia ebano son amarillas vistosas, en racimos erectos. Las de Simarouba brasiliensis son pequeñas, blancas y fragantes.</p>
+      <h3>Frutos y semillas</h3>
+      <p>Legumbre lignificada, circular a ovalada, de color marrón, con forma característica que recuerda a una oreja humana (en el caso del género Caesalpinia). Simarouba produce drupas pequeñas.</p>
+      <h3>Raíz y corteza</h3>
+      <p>Sistema radicular moderadamente profundo. Corteza gris clara, con fisuras longitudinales en ejemplares adultos. La madera es de color oscuro, extremadamente densa.</p>
+    </section>
+
+    <section class="section">
+      <h2>Distribución y hábitat</h2>
+      <p>La Caesalpinia ebano es considerada endémica o casi endémica de Colombia. La Simarouba brasiliensis se distribuye desde Venezuela hasta Brasil. Ambas se encuentran en bosques secos tropicales y como árbol de arborización urbana en la región Caribe colombiana.</p>
+      <div class="notes-block">
+        💡 <strong>Nota ecológica:</strong> Su madera extremadamente dura es el resultado de una lenta acumulación de lignina. Árbol clave en la dinámica de los bosques secos, donde su longevidad y resistencia lo convierten en refugio de biodiversidad.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Usos e importancia</h2>
+      <h3>Usos principales</h3>
+      <ul class="uses-list">
+        <li>Madera: de altísima calidad para carpintería fina, pisos y construcción naval.</li>
+        <li>Arborización urbana: frecuente en calles y parques de ciudades caribeñas por su resistencia.</li>
+        <li>Artesanías: la madera oscura se usa en tallas y objetos decorativos.</li>
+        <li>Sombra en zonas áridas y semiáridas.</li>
+        <li>La calidad de su madera lo hace objetivo de extracción selectiva, lo que amenaza sus poblaciones naturales.</li>
+      </ul>
+      <h3>Importancia cultural</h3>
+      <p>El ébano ha sido símbolo de riqueza y resistencia en muchas culturas. En Colombia, su presencia en ciudades del Caribe lo convierte en árbol de identidad regional, valorado por su longevidad y la calidad insuperable de su madera.</p>
+    </section>
+
+    <section class="section">
+      <h2>Cultivo y conservación</h2>
+      <p>De lento crecimiento. Se propaga por semillas. Prefiere suelos profundos, francos o areno-arcillosos. Su tala intensiva por la calidad de la madera ha reducido las poblaciones naturales en algunas regiones. Se recomienda su inclusión en programas de conservación y arborización.</p>
+    </section>
+
+
+  <div class="ornament">✦ ✦ ✦</div>
+</div><!-- fin .main-content -->
+<footer class="page-footer">
+  <span>Actualización: Mayo 2026</span>
+  <span>Proyecto escolar — Árboles de Colombia</span>
+  <span>Uso educativo</span>
+</footer>
+</div><!-- fin .page-wrapper -->
+<script>
+  function imageLoaded(){{var img=document.getElementById('heroImg');var loader=document.getElementById('heroLoader');img.classList.add('loaded');loader.classList.add('hidden');}}
+  function imageError(){{var loader=document.getElementById('heroLoader');var error=document.getElementById('heroError');loader.classList.add('hidden');error.classList.add('visible');}}
+  var _heroSrc=document.getElementById('heroImg').src;
+  function retryImage(){{var img=document.getElementById('heroImg');var loader=document.getElementById('heroLoader');var error=document.getElementById('heroError');error.classList.remove('visible');loader.classList.remove('hidden');img.src='';setTimeout(function(){{img.src=_heroSrc+'?t='+Date.now();}},300);}}
+  window.addEventListener('load',function(){{var el=document.getElementById('heroImg');if(el&&el.complete&&el.naturalWidth>0)imageLoaded();}});
+</script>
+</body>
+</html>
